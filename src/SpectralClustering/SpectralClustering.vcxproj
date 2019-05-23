@@ -127,12 +127,16 @@
     <ClInclude Include="ClusterRotate.h" />
     <ClInclude Include="Evrot.h" />
     <ClInclude Include="Kmeans.h" />
+    <ClInclude Include="Point2D.h" />
+    <ClInclude Include="PointList.h" />
     <ClInclude Include="SpectralClustering.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClusterRotate.cpp" />
     <ClCompile Include="Evrot.cpp" />
     <ClCompile Include="Kmeans.cpp" />
+    <ClCompile Include="Point2D.cpp" />
+    <ClCompile Include="PointList.cpp" />
     <ClCompile Include="SpectralClustering.cpp" />
   </ItemGroup>
   <ItemGroup>
