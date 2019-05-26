@@ -1,18 +1,29 @@
-#pragma once
+/*
+ * evrot.h
+ *
+ *  Class to compute the gradient of the eigenvectors
+ *  alignment quality
+ *
+ *  Lihi Zelnik (Caltech) March.2005
+ *
+ *  Created on: 02-Mar-2009
+ *      Author: sbutler
+ *
+ */
 
-#define EIGEN2_SUPPORT
+#ifndef EVROT_H_
+#define EVROT_H_
 
 #include <iostream>
 #include <vector>
 #include <math.h>
 #include <Eigen/Core>
-#include <map>
 
 #define DEBUG 0    // set to 1 to see print outs
 #define  EPS 2.2204e-16
 
-class Evrot
-{
+class Evrot {
+
 public:
 	Evrot(Eigen::MatrixXd& X, int method);
 	virtual ~Evrot();
@@ -46,3 +57,4 @@ protected:
 	std::vector<std::vector<int> > mClusters;
 };
 
+#endif /* EVROT_H_ */

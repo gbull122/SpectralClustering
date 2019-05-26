@@ -1,17 +1,32 @@
+/*
+ * Kmeans.cpp
+ *
+ *  Created on: 04-Mar-2009
+ *      Author: sbutler
+ */
+
+#define EIGEN2_SUPPORT
+
 #include "Kmeans.h"
+#include <map>
+#include <iostream>
 
-
-
-Kmeans::Kmeans()
-{
+Kmeans::Kmeans() {
 }
 
-
-Kmeans::~Kmeans()
-{
+Kmeans::~Kmeans() {
 }
 
-std::vector<std::vector<int>> Kmeans::cluster(Eigen::MatrixXd& data, int ncentres) {
+/**
+ * kmeans clustering
+ * based on kmeans matlab script by Ian T Nabney (1996-2001)
+ *
+ * @param data 	affinity matrix
+ * @oaram ncentres	number of clusters
+ * @return		ordered set of data row indices (the path id) for each cluster
+ * 				(order is based on distance to cluster centre)
+ */
+std::vector<std::vector<int> > Kmeans::cluster(Eigen::MatrixXd& data, int ncentres) {
 	int ndims = data.cols();
 	int ndata = data.rows();
 
@@ -34,7 +49,7 @@ std::vector<std::vector<int>> Kmeans::cluster(Eigen::MatrixXd& data, int ncentre
 				}
 			}
 			if (!flag) {
-				centres.row(i) += data.row(randIndex);
+				centres.row(i) = data.row(randIndex);
 				rands.push_back(randIndex);
 			}
 		} while (flag);
@@ -65,7 +80,7 @@ std::vector<std::vector<int>> Kmeans::cluster(Eigen::MatrixXd& data, int ncentre
 			//get centre index (c)
 			minvals[k] = d2.row(k).minCoeff(&r, &c);
 			//set centre
-			post.row(k) += id.row(c);
+			post.row(k) = id.row(c);
 		}
 
 		Eigen::VectorXd num_points = post.colwise().sum();
@@ -85,7 +100,7 @@ std::vector<std::vector<int>> Kmeans::cluster(Eigen::MatrixXd& data, int ncentre
 		// Error value is total squared distance from cluster centres
 		double e = minvals.sum();
 		double ediff = fabs(old_e - e);
-		double cdiff = (centres - old_centres).cwiseAbs().maxCoeff();
+		double cdiff = (centres - old_centres).cwise().abs().maxCoeff();
 		std::cout << "Cycle " << n << " Error " << e << " Movement " << cdiff << ", " << ediff << std::endl;
 
 		if (n > 1) {

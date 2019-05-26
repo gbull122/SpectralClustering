@@ -13,6 +13,8 @@ private:
 public:
 	PointList(void);
 	~PointList(void);
+	int Count();
+	Point2D GetPoint(int index);
 	Point2D GetNearestPoint(int k, Point2D aPoint);
 	void Add(Point2D aPoint);
 };

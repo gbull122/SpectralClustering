@@ -2,73 +2,52 @@
 #include "Clustering.h"
 #include "../SpectralClustering/SpectralClustering.h"
 #include <iterator>
+#include <iostream>
+#include <fstream>
 
+using namespace System::Runtime::InteropServices;
 
-	array<array<int>^>^ Clustering::Class1::DoCluster(array<double,2>^ data)
+	array<array<int>^>^ Clustering::Class1::DoCluster(System::String^ path)
 	{
-		unsigned int dataLength = data->GetLength(0);
+		IntPtr ptrToNativeString = Marshal::StringToHGlobalAnsi(path);
 
-		PointList pointList;
-
-		//Now sort affinity matrix
-		Eigen::MatrixXd A(dataLength, dataLength);
-		for (int i = 0; i < dataLength; i++)
-		{
-			Point2D firstPoint(data[i, 0], data[i, 1]);
-			Point2D thing = pointList.GetNearestPoint(6, firstPoint);
-			for (int j = 0; j < dataLength; j++)
-			{
-				if (i == j)
-				{
-					A(i, j) = 0;
-				}
-				else
-				{
-					double sigmaI = 0;
-					double sigmaJ = 0;
-					Point2D secondPoint(imported(j, 0), imported(j, 1));
-					sigmaI = firstPoint.dist(thing);
-					sigmaJ = firstPoint.dist(secondPoint);
-					double dist = pow(firstPoint.dist(secondPoint), 2);
-					A(i, j) = exp((-1.0 * dist) / (sigmaI * sigmaJ));
-				}
-			}
-		}
+		int K = 4;
+		double simCut = 1;
+		double stopCriteria = 1;
+		std::vector<std::vector<double> > aInput = readData(static_cast<char*>(ptrToNativeString.ToPointer()));
 
 		// generate similarity matrix
-		unsigned int size = data->GetLength(0);
+		unsigned int size = aInput.size();
 		Eigen::MatrixXd m = Eigen::MatrixXd::Zero(size, size);
 
+		// calculate sigmas
+		std::vector<double> aSigmas;
+		for (int i = 0; i < size; i++) {
+			aSigmas.push_back(sigma(aInput, i, K));
+		}
+
 		for (unsigned int i = 0; i < size; i++) {
-			for (unsigned int j = 0; j < size; j++) {
+			for (unsigned int j = i + 1; j < size; j++) {
 				// generate similarity
-				int d = data[i] - data[j];
-				int similarity = exp(-d * d / 100);
+				double d = euclideanDistance(aInput[i], aInput[j]);
+				double similarity = 0;
+				if (d < simCut) {
+					similarity = exp(-(d * d) / (aSigmas[i] * aSigmas[j]));
+				}
 				m(i, j) = similarity;
 				m(j, i) = similarity;
 			}
 		}
 
 		// the number of eigenvectors to consider. This should be near (but greater) than the number of clusters you expect. Fewer dimensions will speed up the clustering
-		int numDims = size;
+		int numDims = std::stoi("4");
 
 		// do eigenvalue decomposition
-		SpectralClustering* c = new SpectralClustering(m, numDims);
-
-		// whether to use auto-tuning spectral clustering or kmeans spectral clustering
-		bool autotune = true;
+		SpectralClustering c(m, numDims);
 
 		std::vector<std::vector<int> > clusters;
-		if (autotune) {
-			// auto-tuning clustering
-			clusters = c->clusterRotate();
-		}
-		else {
-			// how many clusters you want
-			int numClusters = 5;
-			clusters = c->clusterKmeans(numClusters);
-		}
-
+		// auto-tuning clustering
+		clusters = c.clusterRotate();
 		// output clustered items
 		// items are ordered according to distance from cluster centre
 
@@ -89,5 +68,47 @@
 
 		return arr;
 	
+	}
+
+	double Clustering::Class1::euclideanDistance(std::vector<double>& rD1, std::vector<double>& rD2) {
+		double dRes = 0;
+		for (int i = 0; i < rD1.size(); i++) {
+			double dDiff = rD1[i] - rD2[i];
+			dRes += dDiff * dDiff;
+		}
+		return std::sqrt(dRes);
+	}
+
+	double Clustering::Class1::sigma(std::vector<std::vector<double>> rDataset, int nPIndex, int K) {
+		std::vector<double> aDistances;
+		for (int i = 0; i < rDataset.size(); i++) {
+			if (i != nPIndex) { //Don't compare the point with itself
+				aDistances.push_back(euclideanDistance(rDataset[nPIndex], rDataset[i]));
+			}
+		}
+
+		std::sort(aDistances.begin(), aDistances.end());
+
+		return aDistances[K];
+	}
+
+	std::vector<std::vector<double> > Clustering::Class1::readData(char* filePath) {
+		std::fstream aInput;
+		aInput.open(filePath, std::fstream::in);
+
+		std::vector<std::vector<double> > aDataVect;
+		std::string aLine;
+		while (std::getline(aInput, aLine)) {
+			std::vector<double> aPoint;
+			int nStart = 0, nEnd = 0;
+			while ((nEnd = aLine.find(',', nStart)) != std::string::npos) {
+				aPoint.push_back(std::stod(aLine.substr(nStart, nEnd - nStart)));
+				nStart = nEnd + 1;
+			}
+			aPoint.push_back(std::stod(aLine.substr(nStart, aLine.length() - nStart)));
+			aDataVect.push_back(aPoint);
+		}
+		aInput.close();
+		return aDataVect;
 	}
 

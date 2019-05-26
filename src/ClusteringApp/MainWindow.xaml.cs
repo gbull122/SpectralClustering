@@ -19,7 +19,7 @@ namespace ClusteringApp
 
             Class1 clustering = new Class1();
 
-            var data = LoadCsvFile("..\\..\\..\\..\\data\\ClusterTest.csv");
+            var data = "..\\..\\..\\..\\data\\0.txt";
             var clusters = clustering.DoCluster(data);
 
         }

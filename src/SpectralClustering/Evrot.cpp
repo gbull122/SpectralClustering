@@ -1,12 +1,21 @@
+
+/*
+ * evrot.cpp
+ *
+ *  Created on: 04-Mar-2009
+ *      Author: sbutler
+ */
+
+#define EIGEN2_SUPPORT
 #include "Evrot.h"
 
-
+#include <map>
 
 Evrot::Evrot(Eigen::MatrixXd& X, int method) :
 	mMethod(method),
 	mNumDims(X.cols()),
 	mNumData(X.rows()),
-	mNumAngles((int)(mNumDims* (mNumDims - 1) / 2)), // get the number of angles
+	mNumAngles((int)(mNumDims*(mNumDims - 1) / 2)), // get the number of angles
 	ik(Eigen::VectorXi(mNumAngles)),
 	jk(Eigen::VectorXi(mNumAngles)),
 	mX(X),
@@ -25,9 +34,8 @@ Evrot::Evrot(Eigen::MatrixXd& X, int method) :
 	evrot();
 }
 
+Evrot::~Evrot() {
 
-Evrot::~Evrot()
-{
 }
 
 void Evrot::evrot() {
@@ -57,14 +65,14 @@ void Evrot::evrot() {
 					theta_new[d] = theta[d] + alpha;
 					Eigen::MatrixXd& Xrot = rotate_givens(theta_new);
 					Q_up = evqual(Xrot);
-					delete& Xrot;
+					delete &Xrot;
 				}
 				{
 					// move down
 					theta_new[d] = theta[d] - alpha;
 					Eigen::MatrixXd& Xrot = rotate_givens(theta_new);
 					Q_down = evqual(Xrot);
-					delete& Xrot;
+					delete &Xrot;
 				}
 
 				// update only if at least one of them is better
@@ -87,7 +95,7 @@ void Evrot::evrot() {
 				theta_new[d] = theta[d] - alpha * dQ;
 				Eigen::MatrixXd& Xrot = rotate_givens(theta_new);
 				Q_new = evqual(Xrot);
-				delete& Xrot;
+				delete &Xrot;
 
 				if (Q_new > Q) {
 					theta[d] = theta_new[d];
@@ -154,21 +162,21 @@ double Evrot::evqual(Eigen::MatrixXd& X) {
 	return J;
 }
 
-double Evrot::evqualitygrad(Eigen::VectorXd & theta, int angle_index) {
+double Evrot::evqualitygrad(Eigen::VectorXd& theta, int angle_index) {
 	// build V,U,A
 	Eigen::MatrixXd& V = gradU(theta, angle_index);
 
 	Eigen::MatrixXd& U1 = build_Uab(theta, 0, angle_index - 1);
-	Eigen::MatrixXd & U2 = build_Uab(theta, angle_index + 1, mNumAngles - 1);
+	Eigen::MatrixXd& U2 = build_Uab(theta, angle_index + 1, mNumAngles - 1);
 
-	Eigen::MatrixXd A = mX * U1 * V * U2;
+	Eigen::MatrixXd A = mX * U1*V*U2;
 
-	delete & V;
-	delete & U1;
-	delete & U2;
+	delete &V;
+	delete &U1;
+	delete &U2;
 
 	// rotate vecs according to current angles
-	Eigen::MatrixXd & Y = rotate_givens(theta);
+	Eigen::MatrixXd& Y = rotate_givens(theta);
 
 	// find max of each row
 	Eigen::VectorXd max_values(mNumData);
@@ -185,7 +193,7 @@ double Evrot::evqualitygrad(Eigen::VectorXd & theta, int angle_index) {
 	for (int j = 0; j < mNumDims; j++) {  // loop over all columns
 		for (int i = 0; i < mNumData; i++) { // loop over all rows
 			tmp1 = A(i, j) * Y(i, j) / (max_values[i] * max_values[i]);
-			tmp2 = A(i, max_index_col[i]) * (Y(i, j) * Y(i, j)) / (max_values[i] * max_values[i] * max_values[i]);
+			tmp2 = A(i, max_index_col[i]) * (Y(i, j)*Y(i, j)) / (max_values[i] * max_values[i] * max_values[i]);
 			dJ += tmp1 - tmp2;
 		}
 	}
@@ -193,20 +201,20 @@ double Evrot::evqualitygrad(Eigen::VectorXd & theta, int angle_index) {
 	if (DEBUG)
 		std::cout << "Computed gradient = " << dJ << std::endl;
 
-	delete& Y;
+	delete &Y;
 
 	return dJ;
 }
 
-Eigen::MatrixXd& Evrot::rotate_givens(Eigen::VectorXd & theta) {
+Eigen::MatrixXd& Evrot::rotate_givens(Eigen::VectorXd& theta) {
 	Eigen::MatrixXd& G = build_Uab(theta, 0, mNumAngles - 1);
-	Eigen::MatrixXd & Y = *new Eigen::MatrixXd(mX.rows(), mX.cols());
+	Eigen::MatrixXd& Y = *new Eigen::MatrixXd(mX.rows(), mX.cols());
 	Y = mX * G;
-	delete & G;
+	delete &G;
 	return Y;
 }
 
-Eigen::MatrixXd & Evrot::build_Uab(Eigen::VectorXd & theta, int a, int b) {
+Eigen::MatrixXd& Evrot::build_Uab(Eigen::VectorXd& theta, int a, int b) {
 	int k, i;
 	//set Uab to be an identity matrix
 	Eigen::MatrixXd& Uab = *new Eigen::MatrixXd(mNumDims, mNumDims);
@@ -229,7 +237,7 @@ Eigen::MatrixXd & Evrot::build_Uab(Eigen::VectorXd & theta, int a, int b) {
 	return Uab;
 }
 
-Eigen::MatrixXd& Evrot::gradU(Eigen::VectorXd & theta, int k) {
+Eigen::MatrixXd& Evrot::gradU(Eigen::VectorXd& theta, int k) {
 	Eigen::MatrixXd& V = *new Eigen::MatrixXd(mNumDims, mNumDims);
 	V.setZero();
 
@@ -240,4 +248,3 @@ Eigen::MatrixXd& Evrot::gradU(Eigen::VectorXd & theta, int k) {
 
 	return V;
 }
-

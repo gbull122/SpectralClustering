@@ -8,6 +8,16 @@ Point2D::Point2D(double x, double y)
 	yval = y;
 }
 
+double Point2D::X()
+{
+	return xval;
+}
+
+double Point2D::Y()
+{
+	return yval;
+}
+
 double Point2D::dist(Point2D other)
 {
 	double xd = xval - other.xval;

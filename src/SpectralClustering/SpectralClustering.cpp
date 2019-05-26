@@ -1,7 +1,23 @@
+/*
+ * SpectralClustering.cpp
+ *
+ *  Created on: 04-Mar-2009
+ *      Author: sbutler
+ */
+#define EIGEN2_SUPPORT
+
 #include "SpectralClustering.h"
+#include "ClusterRotate.h"
+#include "Kmeans.h"
 
+#include <Eigen/QR>
 
-
+ /**
+ * Performs eigenvector decomposition of an affinity matrix
+ *
+ * @param data 		the affinity matrix
+ * @param numDims	the number of dimensions to consider when clustering
+ */
 SpectralClustering::SpectralClustering(Eigen::MatrixXd& data, int numDims) :
 	mNumDims(numDims),
 	mNumClusters(0)

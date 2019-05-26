@@ -1,18 +1,31 @@
-#pragma once
+/*
+ * Kmeans.h
+ *
+ *  Created on: 04-Mar-2009
+ *      Author: sbutler
+ */
 
-#define EIGEN2_SUPPORT
+#ifndef KMEANS_H_
+#define KMEANS_H_
 
-#include <vector>
-#include <map>
-#include <iostream>
 #include <Eigen/Core>
+#include <vector>
 
-class Kmeans
-{
+class Kmeans {
 public:
 	Kmeans();
-	~Kmeans();
+	virtual ~Kmeans();
 
-	static std::vector<std::vector<int>> cluster(Eigen::MatrixXd& data, int ncentres);
+	/**
+	 * kmeans clustering
+	 * based on kmeans matlab script by Ian T Nabney (1996-2001)
+	 *
+	 * @param data 	affinity matrix
+	 * @oaram ncentres	number of clusters
+	 * @return		ordered set of data row indices (the path id) for each cluster
+	 * 				(order is based on distance to cluster centre)
+	 */
+	static std::vector<std::vector<int> > cluster(Eigen::MatrixXd& data, int ncentres);
 };
 
+#endif /* KMEANS_H_ */

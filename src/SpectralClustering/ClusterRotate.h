@@ -1,17 +1,20 @@
-#pragma once
+/*
+ * ClusterRotate.h
+ *
+ *  Created on: 04-Mar-2009
+ *      Author: sbutler
+ */
 
-#define EIGEN2_SUPPORT
-
-#include <vector>
-#include <map>
+#ifndef CLUSTERROTATE_H_
+#define CLUSTERROTATE_H_
 
 #include <Eigen/Core>
-#include <Eigen/Array>
+#include <vector>
 
 #include "Evrot.h"
 
-class ClusterRotate
-{
+class ClusterRotate {
+
 public:
 	ClusterRotate(int method = 1);
 	virtual ~ClusterRotate() { }
@@ -23,5 +26,7 @@ protected:
 
 	int mMethod;
 	double mMaxQuality;
+
 };
 
+#endif /* CLUSTERROTATE_H_ */

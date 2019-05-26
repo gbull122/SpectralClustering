@@ -10,6 +10,8 @@ public:
 	explicit Point2D(double x=0,double y=0);
 	double dist(Point2D other);
 	~Point2D(void);
+	double X();
+	double Y();
 };
 
 

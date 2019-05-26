@@ -10,10 +10,20 @@ PointList::~PointList(void)
 {
 }
 
+int PointList::Count()
+{
+	return points.size();
+}
+
 void PointList::Add(Point2D aPoint)
 {
 	int count = points.size();
 	points[count] = aPoint;
+}
+
+Point2D PointList::GetPoint(int index)
+{
+	return points.at(index);
 }
 
 Point2D PointList::GetNearestPoint(int k, Point2D aPoint)
@@ -30,7 +40,7 @@ Point2D PointList::GetNearestPoint(int k, Point2D aPoint)
 	if (k - 1 < distances.size())
 	{
 		itr = distances.begin();
-		std::advance(itr, k - 1);
+		std::advance(itr, k -1);
 		d = itr->second;
 	}
 	return points[d];

@@ -1,6 +1,16 @@
+/*
+ * ClusterRotate.cpp
+ *
+ *  Created on: 04-Mar-2009
+ *      Author: sbutler
+ */
+
+#define EIGEN2_SUPPORT
+
 #include "ClusterRotate.h"
 
-
+#include <map>
+#include <Eigen/Array>
 
 ClusterRotate::ClusterRotate(int method) :
 	mMethod(method),
@@ -20,7 +30,7 @@ std::vector<std::vector<int> > ClusterRotate::cluster(Eigen::MatrixXd& X) {
 		if (g > 2) {
 			vecIn.resize(X.rows(), g);
 			vecIn.block(0, 0, vecIn.rows(), g - 1) = e->getRotatedEigenVectors();
-			vecIn.block(0, g - 1, X.rows(), 1) += X.block(0, g - 1, X.rows(), 1);
+			vecIn.block(0, g - 1, X.rows(), 1) = X.block(0, g - 1, X.rows(), 1);
 			delete e;
 		}
 		//perform the rotation for the current number of dimensions
@@ -66,3 +76,4 @@ std::vector<std::vector<int> > ClusterRotate::cluster(Eigen::MatrixXd& X) {
 
 	return clusters;
 }
+
