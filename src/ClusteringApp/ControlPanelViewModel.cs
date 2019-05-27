@@ -5,27 +5,34 @@ using System.IO;
 using System.Linq;
 using Clustering;
 using Prism.Commands;
+using Prism.Events;
 using Prism.Mvvm;
 
 namespace ClusteringApp
 {
     public class ControlPanelViewModel:BindableBase
     {
+        private IEventAggregator eventAggregator;
+        private string dataFilePath = "..\\..\\..\\..\\data\\ClusterTest.csv";
 
         public DelegateCommand ClusterCommand { get; private set; }
 
 
-        public ControlPanelViewModel()
+        public ControlPanelViewModel(IEventAggregator eventAgg)
         {
             ClusterCommand = new DelegateCommand(Cluster);
+            eventAggregator = eventAgg;
         }
 
         private void Cluster()
         {
+            var data = LoadCsvFile(dataFilePath);
+            eventAggregator.GetEvent<DataLoadedEvent>().Publish(data);
+
             Class1 clustering = new Class1();
 
-            var data = "..\\..\\..\\..\\data\\0.txt";
-            var clusters = clustering.DoCluster(data);
+            var clusters = clustering.DoCluster(dataFilePath);
+            eventAggregator.GetEvent<ClustersFoundEvent>().Publish(clusters);
         }
 
         public double[,] LoadCsvFile(string filePath)

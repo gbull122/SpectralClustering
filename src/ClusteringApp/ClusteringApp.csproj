@@ -103,10 +103,12 @@
       <DependentUpon>ChartView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ChartViewModel.cs" />
+    <Compile Include="ClustersFoundEvent.cs" />
     <Compile Include="ControlPanelView.xaml.cs">
       <DependentUpon>ControlPanelView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ControlPanelViewModel.cs" />
+    <Compile Include="DataLoadedEvent.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
