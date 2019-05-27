@@ -14,21 +14,58 @@ namespace ClusteringApp
     {
         private IEventAggregator eventAggregator;
         private string dataFilePath = "..\\..\\..\\..\\data\\ClusterTest.csv";
+        private string loadedFileName;
+        private bool useKmeans;
+        private bool useSpectral;
 
         public DelegateCommand ClusterCommand { get; private set; }
+        public DelegateCommand LoadDataCommand { get; private set; }
 
+        public string LoadedFileName
+        {
+            get { return loadedFileName; }
+            set
+            {
+                loadedFileName = value;
+                RaisePropertyChanged("LoadedFileName");
+            }
+        }
+
+        public bool UseKmeans
+        {
+            get { return useKmeans; }
+            set
+            {
+                useKmeans = value;
+                RaisePropertyChanged("UseKmeans");
+            }
+        }
+
+        public bool UseSpectral
+        {
+            get { return useSpectral; }
+            set
+            {
+                useSpectral = value;
+                RaisePropertyChanged("UseSpectral");
+            }
+        }
 
         public ControlPanelViewModel(IEventAggregator eventAgg)
         {
             ClusterCommand = new DelegateCommand(Cluster);
+            LoadDataCommand = new DelegateCommand(LoadData);
             eventAggregator = eventAgg;
+        }
+
+        private void LoadData()
+        {
+            var data = LoadCsvFile(dataFilePath);
+            eventAggregator.GetEvent<DataLoadedEvent>().Publish(data);
         }
 
         private void Cluster()
         {
-            var data = LoadCsvFile(dataFilePath);
-            eventAggregator.GetEvent<DataLoadedEvent>().Publish(data);
-
             Class1 clustering = new Class1();
 
             var clusters = clustering.DoCluster(dataFilePath);

@@ -6,9 +6,66 @@
     prism:ViewModelLocator.AutoWireViewModel="True">
     
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Label
+            Grid.Row="0"
+            Grid.Column="0"
+            Content="{Binding LoadedFileName}"/>
+        
         <Button
+            Grid.Row="0"
+            Grid.Column="1"
+            Content="Load Data"
+            Command="{Binding LoadDataCommand}"/>
+
+        <Label
+            Grid.Row="1"
+            Grid.Column="0"
+            Content="Clusters"/>
+
+        <TextBox
+            Grid.Row="1"
+            Grid.Column="1"
+            Text="{Binding ClusterNumber}"/>
+
+        <StackPanel
+            Grid.Row="2"
+            Grid.Column="0"
+            Orientation="Vertical">
+
+            <RadioButton
+                GroupName="Methods"
+                Content="KMeans"
+                IsChecked="{Binding UseKmeans}"/>
+
+            <RadioButton
+                GroupName="Methods"
+                Content="Spectral"
+                IsChecked="{Binding UseSpectral}"/>
+
+        </StackPanel>
+            
+        <Button
+            Grid.Row="2"
+            Grid.Column="1"
             Content="Cluster"
             Command="{Binding ClusterCommand}"/>
+
+        <ProgressBar
+            Grid.Row="3"
+            Grid.ColumnSpan="2"
+            />
     </Grid>
     
 </UserControl>
