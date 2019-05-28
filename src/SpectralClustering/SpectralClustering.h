@@ -22,7 +22,7 @@ public:
 	 * @param data 		the affinity matrix
 	 * @param numDims	the number of dimensions to consider when clustering
 	 */
-	SpectralClustering(Eigen::MatrixXd& affinityMatrix, int numDims);
+	SpectralClustering(int numDims);
 	virtual ~SpectralClustering();
 
 	/**
@@ -36,6 +36,8 @@ public:
 	 * @param numClusters	the number of clusters to assign
 	 */
 	std::vector<std::vector<int> > clusterKmeans(int numClusters);
+
+	Eigen::MatrixXd CalcEigenVectors(Eigen::MatrixXd& affinityMatrix);
 
 protected:
 	int mNumDims;

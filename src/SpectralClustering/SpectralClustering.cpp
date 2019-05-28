@@ -18,9 +18,17 @@
  * @param data 		the affinity matrix
  * @param numDims	the number of dimensions to consider when clustering
  */
-SpectralClustering::SpectralClustering(Eigen::MatrixXd& affinityMatrix, int numDims) :
+SpectralClustering::SpectralClustering(int numDims) :
 	mNumDims(numDims),
 	mNumClusters(0)
+{
+
+}
+
+SpectralClustering::~SpectralClustering() {
+}
+
+Eigen::MatrixXd SpectralClustering::CalcEigenVectors(Eigen::MatrixXd& affinityMatrix)
 {
 	Eigen::MatrixXd Deg = Eigen::MatrixXd::Zero(affinityMatrix.rows(), affinityMatrix.cols());
 
@@ -52,11 +60,9 @@ SpectralClustering::SpectralClustering(Eigen::MatrixXd& affinityMatrix, int numD
 	else {
 		mEigenVectors = vec;
 	}
-}
 
-SpectralClustering::~SpectralClustering() {
+	return mEigenVectors;
 }
-
 
 /**
  * Cluster by rotating the eigenvectors and evaluating the quality

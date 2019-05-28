@@ -1,9 +1,12 @@
 #pragma once
 
-#include "..\SpectralClustering\Point2D.h"
-#include "..\SpectralClustering\PointList.h"
 #include <vector>
 #include <Eigen/Core>
+#include <iterator>
+#include <iostream>
+#include <fstream>
+
+#include "../SpectralClustering/SpectralClustering.h"
 
 using namespace System;
 
@@ -11,9 +14,10 @@ namespace Clustering {
 	public ref class Clusters
 	{
 	public:
-		array<array<int>^>^ DoCluster(System::String^ path);
+		array<array<int>^>^ DoCluster(System::String^ path, int maxNumberOfClusters);
 
 	private:
+		array<array<int>^>^ ConvertClusters(std::vector<std::vector<int>> clusters);
 		Eigen::MatrixXd GenerateAffinityMatrix(std::vector<std::vector<double>> points);
 		double EuclideanDistance(std::vector<double>& rD1, std::vector<double>& rD2);
 		double KthNearestPoint(std::vector<std::vector<double>> rDataset, int nPIndex, int K);

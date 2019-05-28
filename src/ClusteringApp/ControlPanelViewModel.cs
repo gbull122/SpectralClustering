@@ -68,7 +68,7 @@ namespace ClusteringApp
         {
             Clusters clustering = new Clusters();
 
-            var clusters = clustering.DoCluster(dataFilePath);
+            var clusters = clustering.DoCluster(dataFilePath, 4);
             eventAggregator.GetEvent<ClustersFoundEvent>().Publish(clusters);
         }
 

@@ -1,34 +1,30 @@
 
 #include "Clustering.h"
-#include "../SpectralClustering/SpectralClustering.h"
-#include <iterator>
-#include <iostream>
-#include <fstream>
 
 using namespace System::Runtime::InteropServices;
 
-	array<array<int>^>^ Clustering::Clusters::DoCluster(System::String^ path)
+	array<array<int>^>^ Clustering::Clusters::DoCluster(System::String^ path, int maxNumberOfClusters)
 	{
 		IntPtr ptrToNativeString = Marshal::StringToHGlobalAnsi(path);
 		std::vector<std::vector<double> > aInput = ReadDataFile(static_cast<char*>(ptrToNativeString.ToPointer()));
 
-		// the number of eigenvectors to consider. This should be near (but greater) than the number of clusters you expect. Fewer dimensions will speed up the clustering
-		int numDims = std::stoi("4");
-
 		Eigen::MatrixXd affinityMatrix = GenerateAffinityMatrix(aInput);
 
-		// do eigenvalue decomposition
-		SpectralClustering c(affinityMatrix, numDims);
+		//Do spectral clustering
+		SpectralClustering spectralClustering(maxNumberOfClusters);
+		spectralClustering.CalcEigenVectors(affinityMatrix);
 
-		std::vector<std::vector<int> > clusters;
-		// auto-tuning clustering
-		clusters = c.clusterRotate();
-		// output clustered items
-		// items are ordered according to distance from cluster centre
+		std::vector<std::vector<int>> clusters;
+		clusters = spectralClustering.clusterRotate();
 
+		return ConvertClusters(clusters);
+	}
+
+	array<array<int>^>^ Clustering::Clusters::ConvertClusters(std::vector<std::vector<int>> clusters)
+	{
 		array<array<int>^>^ arr = gcnew array<array<int>^>(clusters.size());
 
-		for (unsigned int i = 0; i < clusters.size(); i++) 
+		for (unsigned int i = 0; i < clusters.size(); i++)
 		{
 			std::vector<int> cluster = clusters[i];
 			arr[i] = gcnew array<int>(cluster.size());
@@ -42,7 +38,6 @@ using namespace System::Runtime::InteropServices;
 		}
 
 		return arr;
-	
 	}
 
 	Eigen::MatrixXd Clustering::Clusters::GenerateAffinityMatrix(std::vector<std::vector<double>> points)
