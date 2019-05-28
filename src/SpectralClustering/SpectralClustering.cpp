@@ -18,24 +18,24 @@
  * @param data 		the affinity matrix
  * @param numDims	the number of dimensions to consider when clustering
  */
-SpectralClustering::SpectralClustering(Eigen::MatrixXd& data, int numDims) :
+SpectralClustering::SpectralClustering(Eigen::MatrixXd& affinityMatrix, int numDims) :
 	mNumDims(numDims),
 	mNumClusters(0)
 {
-	Eigen::MatrixXd Deg = Eigen::MatrixXd::Zero(data.rows(), data.cols());
+	Eigen::MatrixXd Deg = Eigen::MatrixXd::Zero(affinityMatrix.rows(), affinityMatrix.cols());
 
 	// calc normalised laplacian 
-	for (int i = 0; i < data.cols(); i++) {
-		Deg(i, i) = 1 / (sqrt((data.row(i).sum())));
+	for (int i = 0; i < affinityMatrix.cols(); i++) {
+		Deg(i, i) = 1 / (sqrt((affinityMatrix.row(i).sum())));
 	}
-	Eigen::MatrixXd Lapla = Deg * data * Deg;
+	Eigen::MatrixXd Lapla = Deg * affinityMatrix * Deg;
 
 	Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> s(Lapla, true);
 	Eigen::VectorXd val = s.eigenvalues();
 	Eigen::MatrixXd vec = s.eigenvectors();
 
 	//sort eigenvalues/vectors
-	int n = data.cols();
+	int n = affinityMatrix.cols();
 	for (int i = 0; i < n - 1; ++i) {
 		int k;
 		val.segment(i, n - i).maxCoeff(&k);
@@ -57,13 +57,14 @@ SpectralClustering::SpectralClustering(Eigen::MatrixXd& data, int numDims) :
 SpectralClustering::~SpectralClustering() {
 }
 
+
 /**
  * Cluster by rotating the eigenvectors and evaluating the quality
  */
 std::vector<std::vector<int> > SpectralClustering::clusterRotate() {
 
-	ClusterRotate* c = new ClusterRotate();
-	std::vector<std::vector<int> > clusters = c->cluster(mEigenVectors);
+	ClusterRotate* clusterRotate = new ClusterRotate();
+	std::vector<std::vector<int> > clusters = clusterRotate->cluster(mEigenVectors);
 
 	mNumClusters = clusters.size();
 

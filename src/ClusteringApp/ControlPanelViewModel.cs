@@ -66,7 +66,7 @@ namespace ClusteringApp
 
         private void Cluster()
         {
-            Class1 clustering = new Class1();
+            Clusters clustering = new Clusters();
 
             var clusters = clustering.DoCluster(dataFilePath);
             eventAggregator.GetEvent<ClustersFoundEvent>().Publish(clusters);
