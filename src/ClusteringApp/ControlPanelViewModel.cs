@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using System.Windows.Threading;
 using Clustering;
 using Prism.Commands;
 using Prism.Events;
@@ -17,9 +21,24 @@ namespace ClusteringApp
         private string loadedFileName;
         private bool useKmeans;
         private bool useSpectral;
+        private double[,] data;
+        private string numClusters;
+        private bool progressIndeterminate;
+        internal Dispatcher uiDispatcher;
 
         public DelegateCommand ClusterCommand { get; private set; }
         public DelegateCommand LoadDataCommand { get; private set; }
+        public DelegateCommand<string> PreviewTextCommand { get; private set; }
+
+        public string NumClusters
+        {
+            get { return numClusters; }
+            set
+            {
+                numClusters = value;
+                RaisePropertyChanged("NumClusters");
+            }
+        }
 
         public string LoadedFileName
         {
@@ -51,24 +70,65 @@ namespace ClusteringApp
             }
         }
 
+        public bool ProgressIndeterminate
+        {
+            get { return progressIndeterminate; }
+            set
+            {
+                progressIndeterminate = value;
+                RaisePropertyChanged("ProgressIndeterminate");
+            }
+        }
+
         public ControlPanelViewModel(IEventAggregator eventAgg)
         {
-            ClusterCommand = new DelegateCommand(Cluster);
+            ClusterCommand = new DelegateCommand(Cluster,CanCluster);
             LoadDataCommand = new DelegateCommand(LoadData);
             eventAggregator = eventAgg;
+            numClusters = "4";
+            useSpectral = true;
+
+            uiDispatcher = Dispatcher.CurrentDispatcher;
+        }
+
+        private bool CanCluster()
+        {
+            return data != null;
         }
 
         private void LoadData()
         {
-            var data = LoadCsvFile(dataFilePath);
+            ProgressIndeterminate = true;
+            data = LoadCsvFile(dataFilePath);
             eventAggregator.GetEvent<DataLoadedEvent>().Publish(data);
+            ClusterCommand.RaiseCanExecuteChanged();
+            ProgressIndeterminate = false;
         }
 
-        private void Cluster()
+        private async void Cluster()
+        {
+            StartProgress();
+
+            await Task.Run(() => PerformClusteringAsync());
+
+            StopProgress();
+        }
+
+        private void StopProgress()
+        {
+            ProgressIndeterminate = false;
+        }
+
+        private void StartProgress()
+        {
+            ProgressIndeterminate = true;
+        }
+
+        private async Task PerformClusteringAsync()
         {
             Clusters clustering = new Clusters();
-
-            var clusters = clustering.DoCluster(dataFilePath, 4);
+            int.TryParse(numClusters, out int maxClusters);
+            var clusters = clustering.DoCluster(dataFilePath, maxClusters);
             eventAggregator.GetEvent<ClustersFoundEvent>().Publish(clusters);
         }
 
@@ -103,6 +163,17 @@ namespace ClusteringApp
                                  .Select(x => double.Parse(x.ToString(), CultureInfo.InvariantCulture))
                                  .ToArray<double>();
             return dataValues;
+        }
+
+        public void PreviewText(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !IsTextAllowed(e.Text);
+        }
+
+        private bool IsTextAllowed(string text)
+        {
+            Regex regex = new Regex("[^0-9.-]+"); 
+            return !regex.IsMatch(text);
         }
     }
 }

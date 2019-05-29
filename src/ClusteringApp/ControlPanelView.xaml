@@ -3,69 +3,91 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:prism="http://prismlibrary.com/"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+    xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
     prism:ViewModelLocator.AutoWireViewModel="True">
-    
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
 
-        <Label
-            Grid.Row="0"
-            Grid.Column="0"
-            Content="{Binding LoadedFileName}"/>
-        
-        <Button
-            Grid.Row="0"
-            Grid.Column="1"
-            Content="Load Data"
-            Command="{Binding LoadDataCommand}"/>
+    <GroupBox
+        Header="Clustering Control"
+        Padding="5">
 
-        <Label
-            Grid.Row="1"
-            Grid.Column="0"
-            Content="Clusters"/>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
 
-        <TextBox
-            Grid.Row="1"
-            Grid.Column="1"
-            Text="{Binding ClusterNumber}"/>
+            <Label
+                Grid.Row="0"
+                Grid.Column="0"
+                Content="{Binding LoadedFileName}"
+                Margin="5"/>
 
-        <StackPanel
-            Grid.Row="2"
-            Grid.Column="0"
-            Orientation="Vertical">
+            <Button
+                Grid.Row="0"
+                Grid.Column="1"
+                Content="Load Data"
+                Margin="5"
+                Command="{Binding LoadDataCommand}"/>
 
-            <RadioButton
-                GroupName="Methods"
-                Content="KMeans"
-                IsChecked="{Binding UseKmeans}"/>
+            <Label
+                Grid.Row="1"
+                Grid.Column="0"
+                Margin="5"
+                Content="Clusters"/>
 
-            <RadioButton
-                GroupName="Methods"
-                Content="Spectral"
-                IsChecked="{Binding UseSpectral}"/>
+            <TextBox
+                Grid.Row="1"
+                Grid.Column="1"
+                Text="{Binding NumClusters}"
+                 Margin="5">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewTextInput">
+                            <ei:CallMethodAction TargetObject="{Binding}" MethodName="PreviewText"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+            </TextBox>
 
-        </StackPanel>
+            <StackPanel
+                Grid.Row="2"
+                Grid.Column="0"
+                Orientation="Vertical">
+
+                <RadioButton
+                    GroupName="Methods"
+                    Content="KMeans"
+                    Margin="5"
+                    IsChecked="{Binding UseKmeans}"/>
+
+                <RadioButton
+                    GroupName="Methods"
+                    Content="Spectral"
+                    Margin="5"
+                    IsChecked="{Binding UseSpectral}"/>
+
+            </StackPanel>
+
+            <Button
+                Grid.Row="2"
+                Grid.Column="1"
+                Content="Cluster"
+                Margin="5"
+                Command="{Binding ClusterCommand}"/>
+
+            <ProgressBar
+                Grid.Row="3"
+                Grid.ColumnSpan="2"
+                Margin="5"
+                MinHeight="25"
+                IsIndeterminate="{Binding ProgressIndeterminate}"/>
             
-        <Button
-            Grid.Row="2"
-            Grid.Column="1"
-            Content="Cluster"
-            Command="{Binding ClusterCommand}"/>
-
-        <ProgressBar
-            Grid.Row="3"
-            Grid.ColumnSpan="2"
-            />
-    </Grid>
-    
+        </Grid>
+    </GroupBox>
 </UserControl>
