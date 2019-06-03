@@ -26,7 +26,8 @@ Kmeans::~Kmeans() {
  * @return		ordered set of data row indices (the path id) for each cluster
  * 				(order is based on distance to cluster centre)
  */
-std::vector<std::vector<int> > Kmeans::cluster(Eigen::MatrixXd& data, int ncentres) {
+std::vector<std::vector<int> > Kmeans::cluster(Eigen::MatrixXd& data, int ncentres) 
+{
 	int ndims = data.cols();
 	int ndata = data.rows();
 
@@ -35,25 +36,32 @@ std::vector<std::vector<int> > Kmeans::cluster(Eigen::MatrixXd& data, int ncentr
 	Eigen::MatrixXd old_centres;
 
 	std::vector<int> rands;
-	for (int i = 0; i < ncentres; i++) {
+	for (int i = 0; i < ncentres; i++) 
+	{
 		//randomly initialise centers
 		bool flag;
-		do {
+		do 
+		{
 			flag = false;
 			int randIndex = Eigen::ei_random(0, ndata - 1);
 			//make sure same row not chosen twice
-			for (unsigned int j = 0; j < rands.size(); ++j) {
-				if (randIndex == rands[j]) {
+			for (unsigned int j = 0; j < rands.size(); ++j) 
+			{
+				if (randIndex == rands[j]) 
+				{
 					flag = true;
 					break;
 				}
 			}
-			if (!flag) {
+			if (!flag) 
+			{
 				centres.row(i) = data.row(randIndex);
 				rands.push_back(randIndex);
 			}
-		} while (flag);
+		} 
+		while (flag);
 	}
+
 	Eigen::MatrixXd id = Eigen::MatrixXd::Identity(ncentres, ncentres);
 	//maps vectors to centres.
 	Eigen::MatrixXd post(ndata, ncentres);
@@ -62,21 +70,25 @@ std::vector<std::vector<int> > Kmeans::cluster(Eigen::MatrixXd& data, int ncentr
 
 	double old_e = 0;
 	int niters = 100;
-	for (int n = 0; n < niters; n++) {
+	for (int n = 0; n < niters; n++) 
+	{
 		//Save old centres to check for termination
 		old_centres = centres;
 
 		// Calculate posteriors based on existing centres
 		Eigen::MatrixXd d2(ndata, ncentres);
-		for (int j = 0; j < ncentres; j++) {
-			for (int k = 0; k < ndata; k++) {
+		for (int j = 0; j < ncentres; j++) 
+		{
+			for (int k = 0; k < ndata; k++) 
+			{
 				d2(k, j) = (data.row(k) - centres.row(j)).squaredNorm();
 			}
 		}
 
 		int r, c;
 		// Assign each point to nearest centre
-		for (int k = 0; k < ndata; k++) {
+		for (int k = 0; k < ndata; k++) 
+		{
 			//get centre index (c)
 			minvals[k] = d2.row(k).minCoeff(&r, &c);
 			//set centre
@@ -85,11 +97,15 @@ std::vector<std::vector<int> > Kmeans::cluster(Eigen::MatrixXd& data, int ncentr
 
 		Eigen::VectorXd num_points = post.colwise().sum();
 		// Adjust the centres based on new posteriors
-		for (int j = 0; j < ncentres; j++) {
-			if (num_points[j] > 0) {
+		for (int j = 0; j < ncentres; j++)
+		{
+			if (num_points[j] > 0) 
+			{
 				Eigen::MatrixXd s = Eigen::MatrixXd::Zero(1, ndims);
-				for (int k = 0; k < ndata; k++) {
-					if (post(k, j) == 1) {
+				for (int k = 0; k < ndata; k++) 
+				{
+					if (post(k, j) == 1) 
+					{
 						s += data.row(k);
 					}
 				}
@@ -103,9 +119,11 @@ std::vector<std::vector<int> > Kmeans::cluster(Eigen::MatrixXd& data, int ncentr
 		double cdiff = (centres - old_centres).cwise().abs().maxCoeff();
 		std::cout << "Cycle " << n << " Error " << e << " Movement " << cdiff << ", " << ediff << std::endl;
 
-		if (n > 1) {
+		if (n > 1) 
+		{
 			//Test for termination
-			if (cdiff < 0.0000000001 && ediff < 0.0000000001) {
+			if (cdiff < 0.0000000001 && ediff < 0.0000000001) 
+			{
 				break;
 			}
 		}
@@ -116,11 +134,14 @@ std::vector<std::vector<int> > Kmeans::cluster(Eigen::MatrixXd& data, int ncentr
 
 	//find the item closest to the centre for each cluster
 	std::vector<std::vector<int> > clustered_items;
-	for (int j = 0; j < ncentres; j++) {
+	for (int j = 0; j < ncentres; j++) 
+	{
 		//put data into map (multimap because minvals[k] could be the same for multiple units)
 		std::multimap<double, int> cluster;
-		for (int k = 0; k < ndata; k++) {
-			if (post(k, j) == 1) {
+		for (int k = 0; k < ndata; k++) 
+		{
+			if (post(k, j) == 1) 
+			{
 				cluster.insert(std::make_pair(minvals[k], k));
 			}
 		}
@@ -128,7 +149,8 @@ std::vector<std::vector<int> > Kmeans::cluster(Eigen::MatrixXd& data, int ncentr
 		std::vector<int> units;
 		//the map will be sorted based on the key (the minval) so just loop through it
 		//to get set of data indices sorted on the minval
-		for (std::multimap<double, int>::iterator it = cluster.begin(); it != cluster.end(); it++) {
+		for (std::multimap<double, int>::iterator it = cluster.begin(); it != cluster.end(); it++) 
+		{
 			units.push_back(it->second);
 		}
 

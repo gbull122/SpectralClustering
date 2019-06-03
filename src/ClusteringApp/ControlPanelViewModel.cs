@@ -1,23 +1,23 @@
-﻿using System;
+﻿using Prism.Commands;
+using Prism.Events;
+using Prism.Mvvm;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Threading;
-using Clustering;
-using Prism.Commands;
-using Prism.Events;
-using Prism.Mvvm;
 
 namespace ClusteringApp
 {
     public class ControlPanelViewModel:BindableBase
     {
         private IEventAggregator eventAggregator;
-        private string dataFilePath = "..\\..\\..\\..\\data\\ClusterTest.csv";
+        private string dataFilePath = "..\\..\\..\\..\\data\\5.txt";
         private string loadedFileName;
         private bool useKmeans;
         private bool useSpectral;
@@ -128,7 +128,11 @@ namespace ClusteringApp
         {
             Clusters clustering = new Clusters();
             int.TryParse(numClusters, out int maxClusters);
-            var clusters = clustering.DoCluster(dataFilePath, maxClusters);
+
+            GCHandle handle = GCHandle.Alloc(data, GCHandleType.Pinned);
+            IntPtr pointer = handle.AddrOfPinnedObject();
+
+            var clusters = clustering.DoCluster(pointer,2,data.GetLength(0), maxClusters);
             eventAggregator.GetEvent<ClustersFoundEvent>().Publish(clusters);
         }
 

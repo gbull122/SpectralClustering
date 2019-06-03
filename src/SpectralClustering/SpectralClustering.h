@@ -28,7 +28,7 @@ public:
 	/**
 	 * Cluster by rotating the eigenvectors and evaluating the quality
 	 */
-	std::vector<std::vector<int> > clusterRotate();
+	std::vector<std::vector<int> > clusterRotate(Eigen::MatrixXd& eigenVectors);
 
 	/**
 	 * Cluster by kmeans
