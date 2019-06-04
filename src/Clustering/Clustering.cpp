@@ -3,7 +3,7 @@
 
 using namespace System::Runtime::InteropServices;
 
-array<array<int>^>^ Clusters::DoCluster(IntPtr dataHandle, int dimension , int length, int maxNumberOfClusters)
+array<array<int>^>^ Clusters::DoCluster(IntPtr dataHandle, int dimension , int length, int maxNumberOfClusters, bool useSpectral)
 {
 	std::vector<std::vector<double>> convertedData = Convert(dataHandle,dimension,length);
 
@@ -14,7 +14,11 @@ array<array<int>^>^ Clusters::DoCluster(IntPtr dataHandle, int dimension , int l
 	Eigen::MatrixXd eigenvectors = spectralClustering.CalcEigenVectors(affinityMatrix);
 
 	std::vector<std::vector<int>> clusters;
-	clusters = spectralClustering.clusterRotate(eigenvectors);
+
+	if (useSpectral)
+		clusters = spectralClustering.clusterRotate(eigenvectors);
+	else
+		clusters = spectralClustering.clusterKmeans(eigenvectors,maxNumberOfClusters);
 
 	return ConvertClusters(clusters);
 }

@@ -35,7 +35,7 @@ public:
 	 *
 	 * @param numClusters	the number of clusters to assign
 	 */
-	std::vector<std::vector<int> > clusterKmeans(int numClusters);
+	std::vector<std::vector<int> > clusterKmeans(Eigen::MatrixXd& eigenVectors, int numClusters);
 
 	Eigen::MatrixXd CalcEigenVectors(Eigen::MatrixXd& affinityMatrix);
 

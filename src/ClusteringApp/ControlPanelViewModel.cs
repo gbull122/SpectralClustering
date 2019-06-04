@@ -14,10 +14,9 @@ using System.Windows.Threading;
 
 namespace ClusteringApp
 {
-    public class ControlPanelViewModel:BindableBase
+    public class ControlPanelViewModel : BindableBase
     {
         private IEventAggregator eventAggregator;
-        private string dataFilePath = "..\\..\\..\\..\\data\\5.txt";
         private string loadedFileName;
         private bool useKmeans;
         private bool useSpectral;
@@ -82,7 +81,7 @@ namespace ClusteringApp
 
         public ControlPanelViewModel(IEventAggregator eventAgg)
         {
-            ClusterCommand = new DelegateCommand(Cluster,CanCluster);
+            ClusterCommand = new DelegateCommand(Cluster, CanCluster);
             LoadDataCommand = new DelegateCommand(LoadData);
             eventAggregator = eventAgg;
             numClusters = "4";
@@ -99,10 +98,29 @@ namespace ClusteringApp
         private void LoadData()
         {
             ProgressIndeterminate = true;
-            data = LoadCsvFile(dataFilePath);
+            var filePath = GetFileSelection();
+            LoadedFileName = Path.GetFileName(filePath);
+            data = LoadCsvFile(filePath);
             eventAggregator.GetEvent<DataLoadedEvent>().Publish(data);
             ClusterCommand.RaiseCanExecuteChanged();
             ProgressIndeterminate = false;
+        }
+
+        private string GetFileSelection()
+        {
+            Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
+
+            openFileDialog.DefaultExt = ".txt";
+            openFileDialog.Filter = "Txt Files (*.txt)|*.txt|CSV Files (*.csv)|*.csv";
+            openFileDialog.Multiselect = false;
+            openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+            var dialogResult = openFileDialog.ShowDialog();
+
+            if (dialogResult == true)
+                return openFileDialog.FileName;
+
+            return string.Empty;
         }
 
         private async void Cluster()
@@ -132,7 +150,7 @@ namespace ClusteringApp
             GCHandle handle = GCHandle.Alloc(data, GCHandleType.Pinned);
             IntPtr pointer = handle.AddrOfPinnedObject();
 
-            var clusters = clustering.DoCluster(pointer,2,data.GetLength(0), maxClusters);
+            var clusters = clustering.DoCluster(pointer, 2, data.GetLength(0), maxClusters, useSpectral);
             eventAggregator.GetEvent<ClustersFoundEvent>().Publish(clusters);
         }
 
@@ -176,7 +194,7 @@ namespace ClusteringApp
 
         private bool IsTextAllowed(string text)
         {
-            Regex regex = new Regex("[^0-9.-]+"); 
+            Regex regex = new Regex("[^0-9.-]+");
             return !regex.IsMatch(text);
         }
     }

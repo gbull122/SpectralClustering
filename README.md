@@ -1,7 +1,9 @@
 # Clustering
 
-A Visual Studio solution for playing around with a C++/Cli wrapper to access the C++ 
-[Spectral Clustering code](https://github.com/pthimon/clustering) from C#. Using test data from [IoSL_Clustering](https://github.com/atidjani/IoSL_Clustering/wiki/self-tuning-spectral-clustering)
+A Visual Studio solution for playing around with C++/Cli wrappers for native C++. Using spectral clustering code from
+[Spectral Clustering code](https://github.com/pthimon/clustering). Using test data from [IoSL_Clustering](https://github.com/atidjani/IoSL_Clustering/wiki/self-tuning-spectral-clustering)
+
+![Screenshot](clustering.png)
 
 Consists of 4 projects
 
@@ -12,7 +14,8 @@ Copy of the [C++ code](https://github.com/pthimon/clustering). Currently using v
 A C++/Cli Wrapper
 
 ## ClusteringApp
-A C# WPF app using [Prism](https://github.com/PrismLibrary/Prism) and [OxyPlot](https://github.com/oxyplot/oxyplot) for charting the data and results.
+A rudimentry C# WPF app using [Prism](https://github.com/PrismLibrary/Prism) and [OxyPlot](https://github.com/oxyplot/oxyplot) for charting the data and results.
+Currently only loads txt or csv files that are simply two columns of normalised coordinates.
 
 ## SpectralClustering_Test
 A GoogleTest project, not currently being used.

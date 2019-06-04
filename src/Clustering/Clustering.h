@@ -15,7 +15,7 @@ public ref class Clusters
 
 public:
 	array<array<int>^>^ DoCluster(System::String^ path, int maxNumberOfClusters);
-	array<array<int>^>^ Clusters::DoCluster(IntPtr dataHandle, int dimension, int length, int maxNumberOfClusters);
+	array<array<int>^>^ Clusters::DoCluster(IntPtr dataHandle, int dimension, int length, int maxNumberOfClusters, bool useSpectral);
 
 private:
 	array<array<int>^>^ ConvertClusters(std::vector<std::vector<int>> clusters);

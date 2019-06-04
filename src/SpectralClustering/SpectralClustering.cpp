@@ -88,7 +88,7 @@ std::vector<std::vector<int> > SpectralClustering::clusterRotate(Eigen::MatrixXd
  *
  * @param numClusters	the number of clusters to assign
  */
-std::vector<std::vector<int> > SpectralClustering::clusterKmeans(int numClusters) 
+std::vector<std::vector<int> > SpectralClustering::clusterKmeans(Eigen::MatrixXd& eigenVectors,int numClusters)
 {
 	mNumClusters = numClusters;
 	return Kmeans::cluster(mEigenVectors, numClusters);

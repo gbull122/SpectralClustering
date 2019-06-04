@@ -17,7 +17,6 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -64,7 +63,7 @@
                     GroupName="Methods"
                     Content="KMeans"
                     Margin="5"
-                    IsChecked="{Binding UseKmeans}"/>
+                    IsChecked="{Binding UseKMeans}"/>
 
                 <RadioButton
                     GroupName="Methods"
