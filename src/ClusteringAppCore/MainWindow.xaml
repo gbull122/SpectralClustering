@@ -1,0 +1,24 @@
+﻿<Window 
+    x:Class="ClusteringAppCore.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:prism="http://prismlibrary.com/"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    prism:ViewModelLocator.AutoWireViewModel="True"
+    Title="{Binding Title}">
+
+    <Grid>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <ContentControl
+            Grid.Column="0"
+            prism:RegionManager.RegionName="ControlRegion"/>
+
+        <ContentControl
+            Grid.Column="1"
+            prism:RegionManager.RegionName="ChartRegion"/>
+    </Grid>
+</Window>
