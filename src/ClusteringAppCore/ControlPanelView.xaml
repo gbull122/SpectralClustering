@@ -1,0 +1,92 @@
+﻿<UserControl 
+    x:Class="ClusteringAppCore.ControlPanelView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:prism="http://prismlibrary.com/"
+    xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    prism:ViewModelLocator.AutoWireViewModel="True">
+
+    <GroupBox
+        Header="Clustering Control"
+        Padding="5">
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Label
+                Grid.Row="0"
+                Grid.Column="0"
+                Content="{Binding LoadedFileName}"
+                Margin="5"/>
+
+            <Button
+                Grid.Row="0"
+                Grid.Column="1"
+                Content="Load Data"
+                Margin="5"
+                Command="{Binding LoadDataCommand}"/>
+
+            <Label
+                Grid.Row="1"
+                Grid.Column="0"
+                Margin="5"
+                Content="Clusters"/>
+
+            <TextBox
+                Grid.Row="1"
+                Grid.Column="1"
+                Text="{Binding NumClusters}"
+                 Margin="5">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="PreviewTextInput">
+                        <ei:CallMethodAction TargetObject="{Binding}" MethodName="PreviewText"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </TextBox>
+
+            <StackPanel
+                Grid.Row="2"
+                Grid.Column="0"
+                Orientation="Vertical">
+
+                <RadioButton
+                    GroupName="Methods"
+                    Content="KMeans"
+                    Margin="5"
+                    IsChecked="{Binding UseKMeans}"/>
+
+                <RadioButton
+                    GroupName="Methods"
+                    Content="Spectral"
+                    Margin="5"
+                    IsChecked="{Binding UseSpectral}"/>
+
+            </StackPanel>
+
+            <Button
+                Grid.Row="2"
+                Grid.Column="1"
+                Content="Cluster"
+                Margin="5"
+                Command="{Binding ClusterCommand}"/>
+
+            <ProgressBar
+                Grid.Row="3"
+                Grid.ColumnSpan="2"
+                Margin="5"
+                MinHeight="25"
+                IsIndeterminate="{Binding ProgressIndeterminate}"/>
+
+        </Grid>
+    </GroupBox>
+</UserControl>
